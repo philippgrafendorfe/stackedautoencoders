@@ -5,6 +5,12 @@ library(caret)
 
 # Exploring SAENET package
 
+# you will find out how autoencoders can be "stacked" in a greedy layerwise fashion for pretraining (initializing) the weights of a deep network.
+
+# what we do: we compare the classification results of a neural net with no weight initiliazitation to the result of a neural nets which has weight initilialization with sae.
+
+# Sparse Autoencoder for Automatic Learning of Representative Features from Unlabeled Data
+
 # Build a stacked Autoencoder
 output <- SAENET.train(
   as.matrix(iris[1:100,1:4])
