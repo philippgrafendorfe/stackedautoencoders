@@ -3,6 +3,7 @@ library(SAENET)
 library(autoencoder)
 library(caret)
 
+
 # Exploring SAENET package
 
 # you will find out how autoencoders can be "stacked" in a greedy layerwise fashion for pretraining (initializing) the weights of a deep network.
@@ -34,3 +35,4 @@ print(pred)
 
 prediction <- pred[[1]]$X.output
 print(prediction)
+
