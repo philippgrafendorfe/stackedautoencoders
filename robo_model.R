@@ -2,6 +2,7 @@ library(neuralnet)
 library(SAENET)
 library(autoencoder)
 library(caret)
+library(nnet)
 
 # data exploration
 df <- data.table::fread(input =  '../Data/sensor_readings_24.csv', data.table = F, stringsAsFactors = T)
@@ -43,7 +44,15 @@ training <- df[a,]
 test <- df[-a,]
 
 formula <- as.formula(paste0("Direction ~ ", paste0(names(df)[1:24], collapse = "+")))
+# train with neuralnet package
 net <- neuralnet(formula = formula, data = training)
+
+# train with nnet package
+nnet_model <- nnet(formula, training, size = 18)
+prediction <- predict(nnet_model, test, type = "class")
+
+table(test$Direction, prediction)
+
 
 # Exploring SAENET package
 
