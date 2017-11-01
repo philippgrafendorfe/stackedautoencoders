@@ -9,7 +9,8 @@ df <- plyr::rename(df, c('V25' = 'Direction'))
 table(df$Direction)
 prop.table(table(df$Direction))
 
-train <- as.matrix(df[,1:length(df) - 1])
+train_matrix_nolabel <- as.matrix(df[,1:length(df) - 1])
+train_df_labeled <- df
 
 nl=3 ## number of layers (default is 3: input, hidden, output)
 unit.type = "logistic" ## specify the network unit type, i.e., the unit's
@@ -35,6 +36,14 @@ autoencoder.object <- autoencode(X.train = train
                                  ,max.iterations = max.iterations
                                  ,rescale.flag = TRUE
                                  ,rescaling.offset = 0.001)
+
+# create data partition
+a <- caret::createDataPartition(df$Direction, p = 0.8, list = F)
+training <- df[a,]
+test <- df[-a,]
+
+formula <- as.formula(paste0("Direction ~ ", paste0(names(df)[1:24], collapse = "+")))
+net <- neuralnet(formula = formula, data = training)
 
 # Exploring SAENET package
 
