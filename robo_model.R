@@ -10,7 +10,7 @@ library(Matrix)
 #### packages to be tested: h2o with deep autoencoders
 
 # data exploration
-df <- data.table::fread(input =  '../Data/sensor_readings_24.csv', data.table = F, stringsAsFactors = T)
+df <- data.table::fread(input =  'Data/sensor_readings_24.csv', data.table = F, stringsAsFactors = T)
 df <- plyr::rename(df, c('V25' = 'Direction'))
 table(df$Direction)
 prop.table(table(df$Direction))
@@ -31,7 +31,7 @@ epsilon <- 0.001 ## a small parameter for initialization of weights
 ## as small gaussian random numbers sampled from N(0,epsilon^2)
 max.iterations = 2000 ## number of iterations in optimizer
 
-autoencoder.object <- autoencode(X.train = train
+autoencoder.object <- autoencode(X.train = as.matrix(train)
                                  ,nl = nl
                                  ,N.hidden = N.hidden
                                  ,unit.type = unit.type
@@ -86,15 +86,15 @@ preProcValues <- preProcess(train_data, method = "range")
 trainTransformed <- predict(preProcValues, train_data)
 testTransformed <- predict(preProcValues, test_data)
 
-dnngrid <- expand.grid(layer1 = 12:18
-                       ,layer2 = 12:18
-                       ,layer3 = 12:18
-                       ,hidden_dropout = c(0, 0.1)
+dnngrid <- expand.grid(layer1 = 12
+                       ,layer2 = 12
+                       ,layer3 = 12
+                       ,hidden_dropout = c(0)
                        ,visible_dropout = 0)
 
 fitControl <- trainControl(
   method = "cv"
-  ,number = 5
+  ,number = 2
   # ,search = "random"
   ,returnResamp = "all"
   )
