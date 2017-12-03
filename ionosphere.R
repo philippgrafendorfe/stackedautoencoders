@@ -2,6 +2,7 @@ library(caret)
 library(nnet)
 library(mlbench)
 library(mxnet)
+library(autoencoder)
 
 data(Ionosphere)
 summary(Ionosphere)
@@ -63,3 +64,56 @@ model <- mx.mlp(train.x, train.y, hidden_node=10, out_node=2, out_activation="so
 preds = predict(model, test.x)
 pred.label = max.col(t(preds))-1
 table(pred.label, test.y)
+
+
+
+
+###############################################################################################
+#AUTOENCODER
+###############################################################################################
+df <- df[, 3:35]
+train_matrix_nolabel <- as.matrix(df[,1:length(df) - 1])
+
+
+#### with autoencoder package
+nl = 3 ## number of layers (default is 3: input, hidden, output)
+unit.type = "logistic" ## specify the network unit type, i.e., the unit's
+## activation function ("logistic" or "tanh")
+#Nx.patch=10 ## width of training image patches, in pixels 
+#Ny.patch=10 ## height of training image patches, in pixels 
+#N.input = Nx.patch*Ny.patch ## number of units (neurons) in the input layer (one unit per pixel) 
+#N.hidden = 10*10 ## number of units in the hidden layer
+N.input = 32 ## number of units (neurons) in the input layer (one unit per pixel)
+N.hidden = 12 ## number of units in the hidden layer
+lambda = 0.0002 ## weight decay parameter
+beta = 6 ## weight of sparsity penalty term
+rho = 0.01 ## desired sparsity parameter
+epsilon <- 0.001 ## a small parameter for initialization of weights
+## as small gaussian random numbers sampled from N(0,epsilon^2)
+max.iterations = 2000 ## number of iterations in optimizer
+
+autoencoder.object <- autoencode(X.train = train_matrix_nolabel
+                                 ,nl = nl
+                                 ,N.hidden = N.hidden
+                                 ,unit.type = unit.type
+                                 ,lambda = lambda
+                                 ,beta = beta
+                                 ,rho = rho
+                                 ,epsilon = epsilon
+                                 ,optim.method = "BFGS"
+                                 ,max.iterations = max.iterations
+                                 ,rescale.flag = TRUE
+                                 ,rescaling.offset = 0.001)
+
+## Extract weights W and biases b from autoencoder.object: 
+W <- autoencoder.object$W 
+b <- autoencoder.object$b 
+## Visualize learned features of the autoencoder: 
+#visualize.hidden.units(autoencoder.object,Nx.patch,Ny.patch)
+
+
+## Report mean squared error for training and test sets: 
+cat("autoencode(): mean squared error for training set: ", round(autoencoder.object$mean.error.training.set,3),"\n")
+
+
+X.output <- predict(autoencoder.object, X.input=train_matrix_nolabel, hidden.output=FALSE)$X.output
