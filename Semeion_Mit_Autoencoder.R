@@ -1,4 +1,3 @@
-
 library(mxnet)
 library(RCurl)
 library(caret)
@@ -32,50 +31,12 @@ table(semeion[,257])
 
 semeion[,ncol(semeion)]<-as.factor(semeion[,ncol(semeion)])
 
-# c <- c(0,1,2,3,0,1,2,3)
-# which(as.logical(c,arr.ind=T))
 
-#################################################### MxNetR ###############################################
-
-a <- caret::createDataPartition(semeion$digit, p = 0.8, list = F)
-
-train.semeion <- data.matrix(semeion[a,1:ncol(semeion)-1])
-train.label.semeion <- semeion[a,ncol(semeion)]
-
-test.semeion <- data.matrix(semeion[-a,1:ncol(semeion)-1])
-test.label.semeion <- data.matrix(semeion[-a,ncol(semeion)])
-table(train.label.semeion)
-table(test.label.semeion)
-
-
-data <- mx.symbol.Variable("data")
-fc1 <- mx.symbol.FullyConnected(data, name="fc1", num_hidden=128)
-act1 <- mx.symbol.Activation(fc1, name="sigm1", act_type="relu")
-fc2 <- mx.symbol.FullyConnected(act1, name="fc2", num_hidden=64)
-act2 <- mx.symbol.Activation(fc2, name="sigm2", act_type="relu")
-fc3 <- mx.symbol.FullyConnected(act2, name="fc3", num_hidden=10)
-softmax <- mx.symbol.SoftmaxOutput(fc2, name="softmax")
-
-mx.set.seed(0)
-
-model <- mx.model.FeedForward.create(softmax, X=train.semeion, y=train.label.semeion,
-                                     num.round=10, array.batch.size=100,
-                                     learning.rate=0.07, momentum=0.9,  eval.metric=mx.metric.accuracy)
-preds <- 0
-preds <- predict(model, test.semeion)
-pred.label <- max.col(t(preds)) - 1
-table(pred.label)
-table(test.label.semeion)
-confusionMatrix(pred.label,test.label.semeion)
-table(pred.label, test.label.semeion)
-sum(diag(table(pred.label, test.label.semeion)))
-#### 292 von 314
-
-#################################################### H2o ###########################################
+###################################################### Neuronales Netz ###################################
 library(h2o)
 
 local.h2o <- h2o.init(ip = "localhost", port = 54321, startH2O = TRUE, nthreads=-1)
-
+a <- caret::createDataPartition(semeion$digit, p = 0.8, list = F)
 
 train.semeion <- data.frame(semeion[a,1:ncol(semeion)])
 test.semeion <- data.frame(semeion[-a,1:ncol(semeion)])
@@ -104,93 +65,12 @@ test_labels<-data.frame(test.semeion[,ncol(test.semeion)])
 #calculate number of correct prediction
 table(test_labels[,1],pred.dl.df[,1])
 sum(diag(table(test_labels[,1],pred.dl.df[,1])))
-
-#### 289 von 314 richtig -> 92.04 % act. Tanh
-#### nfold = 5, 292 richtig von 314 -> 92.99 % act. Tanh
-#### 291 von 314 richtig -> 92,68 %  act. Maxout
-#### 287 von 312 richtig ->         act. Maxout nfold = 5
+nrow(tsData)
+############################################################# Autoencoder 
 
 
-####################################### Plotting digits
-
-par(mfrow=c(2,1))
-rotate <- function(x) t(apply(x, 2, rev))
-m = matrix(unlist(semeion[100,-ncol(semeion)]), nrow = 16, byrow = TRUE)
-d<-rotate(matrix(unlist(semeion[100,-ncol(semeion)]),nrow = 16, byrow = TRUE))
-# Plot that matrix
-image(d,col=c("black","white"))
 
 
-# Plot some of images
-# par(mfrow=c(2,3))
-# lapply(1:6, 
-#        function(x) image(
-#          rotate(matrix(unlist(train[x,-1]),nrow = 28, byrow = TRUE)),
-#          col=grey.colors(255),
-#          xlab=train[x,1]
-#        )
-# )
-# 
-# par(mfrow=c(1,1))
-#######################################################################################
-library(autoencoder)
-
-df <- semeion[, 1:ncol(semeion)]
-train_matrix_nolabel <- as.matrix(df[,1:length(df) - 1])
-
-
-#### with autoencoder package
-nl = 3 ## number of layers (default is 3: input, hidden, output)
-unit.type = "logistic" ## specify the network unit type, i.e., the unit's
-## activation function ("logistic" or "tanh")
-#Nx.patch=10 ## width of training image patches, in pixels 
-#Ny.patch=10 ## height of training image patches, in pixels 
-#N.input = Nx.patch*Ny.patch ## number of units (neurons) in the input layer (one unit per pixel) 
-#N.hidden = 10*10 ## number of units in the hidden layer
-N.input = 32 ## number of units (neurons) in the input layer (one unit per pixel)
-N.hidden = 12 ## number of units in the hidden layer
-lambda = 0.0002 ## weight decay parameter
-beta = 6 ## weight of sparsity penalty term
-rho = 0.01 ## desired sparsity parameter
-epsilon <- 0.001 ## a small parameter for initialization of weights
-## as small gaussian random numbers sampled from N(0,epsilon^2)
-max.iterations = 2000 ## number of iterations in optimizer
-
-autoencoder.object <- autoencode(X.train = train_matrix_nolabel
-                                 ,nl = nl
-                                 ,N.hidden = N.hidden
-                                 ,unit.type = unit.type
-                                 ,lambda = lambda
-                                 ,beta = beta
-                                 ,rho = rho
-                                 ,epsilon = epsilon
-                                 ,optim.method = "BFGS"
-                                 ,max.iterations = max.iterations
-                                 ,rescale.flag = TRUE
-                                 ,rescaling.offset = 0.001)
-
-## Extract weights W and biases b from autoencoder.object: 
-W <- autoencoder.object$W 
-b <- autoencoder.object$b 
-## Visualize learned features of the autoencoder: 
-#visualize.hidden.units(autoencoder.object,Nx.patch,Ny.patch)
-
-
-## Report mean squared error for training and test sets: 
-cat("autoencode(): mean squared error for training set: ", round(autoencoder.object$mean.error.training.set,3),"\n")
-
-
-X.output <- predict(autoencoder.object, X.input=train_matrix_nolabel, hidden.output=FALSE)$X.output
-
-X.output <- as.data.frame(X.output)
-
-rotate <- function(x) t(apply(x, 2, rev))
-m = matrix(unlist(X.output[100,]), nrow = 16, byrow = TRUE)
-d<-rotate(matrix(unlist(X.output[100,]),nrow = 16, byrow = TRUE))
-# Plot that matrix
-image(d,col=c("black","white"))
-
-######################################## Autoencoder H20
 Semeion2 <- as.h2o(semeion)
 Semeion2 <- Semeion2[,-ncol(Semeion2)]
 response <- "Class"
@@ -203,21 +83,94 @@ model_nn <- h2o.deeplearning(x = features,
                              reproducible = TRUE, #slow - turn off for real problems
                              ignore_const_cols = FALSE,
                              seed = 42,
-                             hidden = c(10, 2, 10), 
-                             epochs = 100,
+                             hidden = c(128, 64,128), 
+                             epochs = 1000,
                              activation = "Tanh")
+summary(model_nn)$variable_importance
+ggplot(data=summary(model_nn),aes(x=variable, y=relative_importance)) + geom_point()
 
-test_autoenc <- h2o.predict(model_nn, tsData[,-ncol(tsData)])
+test_autoenc <- h2o.predict(model_nn, Semeion2[,-ncol(Semeion2)])
+hilfe <- as.data.frame(test_autoenc)
+num <- data.frame()
+num2 <- data.frame()
+index <- which(semeion$digit==0)
+num <- rbind(num,semeion[index[1],])
+num2 <- rbind(num2,hilfe[index[1],])
+index <- which(semeion$digit==1)
+num <- rbind(num,semeion[index[1],])
+num2 <- rbind(num2,hilfe[index[1],])
+index <- which(semeion$digit==2)
+num <- rbind(num,semeion[index[1],])
+num2 <- rbind(num2,hilfe[index[1],])
+index <- which(semeion$digit==3)
+num <- rbind(num,semeion[index[1],])
+num2 <- rbind(num2,hilfe[index[1],])
+index <- which(semeion$digit==4)
+num <- rbind(num,semeion[index[1],])
+num2 <- rbind(num2,hilfe[index[1],])
+index <- which(semeion$digit==5)
+num <- rbind(num,semeion[index[1],])
+num2 <- rbind(num2,hilfe[index[1],])
+index <- which(semeion$digit==6)
+num <- rbind(num,semeion[index[1],])
+num2 <- rbind(num2,hilfe[index[1],])
+index <- which(semeion$digit==7)
+num <- rbind(num,semeion[index[1],])
+num2 <- rbind(num2,hilfe[index[1],])
+index <- which(semeion$digit==8)
+num <- rbind(num,semeion[index[1],])
+num2 <- rbind(num2,hilfe[index[1],])
+index <- which(semeion$digit==9)
+num <- rbind(num,semeion[index[1],])
+num2 <- rbind(num2,hilfe[index[1],])
+num2$digit
+
+# reverses (rotates the matrix)
 rotate <- function(x) t(apply(x, 2, rev))
-m = matrix(unlist(tsData[1,-ncol(tsData)]), nrow = 16, byrow = TRUE)
-d<-rotate(matrix(unlist(tsData[1,-ncol(tsData)]),nrow = 16, byrow = TRUE))
-# Plot that matrix
-image(d,col=c("black","white"))
+
+# Plot some of images
+par(mfrow=c(4,3))
+lapply(1:10, 
+       function(x) image(
+         rotate(matrix(unlist((num[x,-ncol(num)])),nrow = 16, byrow = TRUE)),
+         col=grey.colors(255),
+         xlab=(num[x,ncol(num)])
+       )
+)
+
+# Plot some of images
+par(mfrow=c(4,3))
+lapply(1:10, 
+       function(x) image(
+         rotate(matrix(unlist(num2[x,]),nrow = 16, byrow = TRUE)),
+         col=grey.colors(255),
+         xlab=(num[x,ncol(num)])
+       )
+)
+
+#############################################################
+hilfe <- as.data.frame(test_autoenc)
+df <- cbind(hilfe,semeion[,ncol(semeion)])
+df <- as.data.frame(df)
+a <- caret::createDataPartition(as.vector(df[,ncol(df)]), p = 0.8, list = F)
+
+train.semeion <- data.frame(df[a,1:ncol(df)])
+test.semeion <- data.frame(df[-a,1:ncol(df)])
+
+trData<-as.h2o(train.semeion)
+tsData<-as.h2o(test.semeion)
+
+res.dl <- h2o.deeplearning(x = 1:(ncol(trData)-1), y = ncol(trData), trData, activation = "Tanh", 
+                           hidden=rep(160,5),epochs = 20, nfold = 5)
+summary(res.dl)
 
 
-rotate <- function(x) t(apply(x, 2, rev))
-m = matrix(unlist(test_autoenc[1,]), nrow = 16, byrow = TRUE)
-d<-rotate(matrix(unlist(test_autoenc[1,]),nrow = 16, byrow = TRUE))
-# Plot that matrix
-image(d,col=c("black","white"))
+pred.dl<-h2o.predict(object=res.dl, newdata=tsData[,-ncol(tsData)])
+pred.dl.df<-as.data.frame(pred.dl)
+summary(pred.dl)
+test_labels<-data.frame(test.semeion[,ncol(test.semeion)])
+#calculate number of correct prediction
+table(test_labels[,1],pred.dl.df[,1])
+sum(diag(table(test_labels[,1],pred.dl.df[,1])))
+nrow(tsData)
 
