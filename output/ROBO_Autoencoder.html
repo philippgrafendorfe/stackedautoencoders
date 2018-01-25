@@ -11836,7 +11836,7 @@ The numbering of the ultrasound sensors starts at the front of the robot and inc
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[77]:</div>
+<div class="prompt input_prompt">In&nbsp;[189]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># modules</span>
@@ -11852,6 +11852,7 @@ The numbering of the ultrasound sensors starts at the front of the robot and inc
 <span class="kn">from</span> <span class="nn">keras.utils.vis_utils</span> <span class="k">import</span> <span class="n">model_to_dot</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">preprocessing</span>
 <span class="kn">from</span> <span class="nn">keras</span> <span class="k">import</span> <span class="n">layers</span>
+<span class="kn">from</span> <span class="nn">keras</span> <span class="k">import</span> <span class="n">initializers</span>
 
 <span class="kn">import</span> <span class="nn">keras</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -11860,6 +11861,8 @@ The numbering of the ultrasound sensors starts at the front of the robot and inc
 <span class="kn">import</span> <span class="nn">pydot</span>
 <span class="kn">import</span> <span class="nn">graphviz</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
 </pre></div>
 
 </div>
@@ -11867,13 +11870,23 @@ The numbering of the ultrasound sensors starts at the front of the robot and inc
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Import-and-basic-data-inspection">Import and basic data inspection<a class="anchor-link" href="#Import-and-basic-data-inspection">&#182;</a></h2>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[51]:</div>
+<div class="prompt input_prompt">In&nbsp;[152]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># import</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/sensor_readings_24.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">data_raw</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/sensor_readings_24.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data_raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -11881,9 +11894,19 @@ The numbering of the ultrasound sensors starts at the front of the robot and inc
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The dataframe consists of only positive values and the classes are encoded as strings in the variable with index <code>24</code></p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="prompt input_prompt">In&nbsp;[153]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -11898,7 +11921,7 @@ The numbering of the ultrasound sensors starts at the front of the robot and inc
 
 
 <div class="output_area">
-<div class="prompt output_prompt">Out[52]:</div>
+<div class="prompt output_prompt">Out[153]:</div>
 
 
 <div class="output_html rendered_html output_subarea output_execute_result">
@@ -12081,31 +12104,21 @@ The numbering of the ultrasound sensors starts at the front of the robot and inc
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The data is not normalized and the classes are given as strings. We are going to change that.</p>
+<p>Whats the distribution of the classes?</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[53]:</div>
+<div class="prompt input_prompt">In&nbsp;[154]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">24</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">24</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())))}</span>
-<span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="mi">24</span><span class="p">:</span><span class="n">mapping</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[140]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data</span><span class="p">[</span><span class="mi">24</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_tab</span> <span class="o">=</span> <span class="n">data_raw</span>
+<span class="n">df_tab</span><span class="p">[</span><span class="mi">24</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_tab</span><span class="p">[</span><span class="mi">24</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+<span class="n">tab</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df_tab</span><span class="p">[</span><span class="mi">24</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;frequency&quot;</span><span class="p">)</span>
+<span class="n">tab</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Class/Direction&#39;</span>
+<span class="n">tab</span><span class="o">/</span><span class="n">tab</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -12117,22 +12130,55 @@ The numbering of the ultrasound sensors starts at the front of the robot and inc
 
 
 <div class="output_area">
-<div class="prompt output_prompt">Out[140]:</div>
+<div class="prompt output_prompt">Out[154]:</div>
 
 
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
 
-<div class="output_text output_subarea output_execute_result">
-<pre>0    0
-1    0
-2    0
-3    0
-4    0
-5    0
-6    0
-7    0
-8    1
-9    1
-Name: 24, dtype: int64</pre>
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>col_0</th>
+      <th>frequency</th>
+    </tr>
+    <tr>
+      <th>Class/Direction</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Move-Forward</th>
+      <td>0.404142</td>
+    </tr>
+    <tr>
+      <th>Sharp-Right-Turn</th>
+      <td>0.384348</td>
+    </tr>
+    <tr>
+      <th>Slight-Left-Turn</th>
+      <td>0.060117</td>
+    </tr>
+    <tr>
+      <th>Slight-Right-Turn</th>
+      <td>0.151393</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 </div>
 
 </div>
@@ -12146,14 +12192,88 @@ Name: 24, dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Take a random sample of 90% of the rows from the dataframe. To ensure reproducability the <code>random_state</code> variable is set. The other 10% are placed aside for validation after training. The last column is the class column and is stored in the y variables respectively.</p>
+<p>The <code>Move_Forward</code> and the <code>Sharp-Right-Turn</code> Class combine nearly 80% of all observated classes. So it might happen, that the accuracy may still be high with around 75% although most of the features are eliminated.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Preprocessing">Preprocessing<a class="anchor-link" href="#Preprocessing">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>0. Mapping integer values to the classes.</strong></p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[55]:</div>
+<div class="prompt input_prompt">In&nbsp;[155]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">24</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">24</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())))}</span>
+<span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="mi">24</span><span class="p">:</span><span class="n">mapping</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[156]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data</span><span class="p">[</span><span class="mi">24</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt output_prompt">Out[156]:</div>
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([0, 1, 2, 3], dtype=int64)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>1. Take a random sample of 90% of the rows from the dataframe. To ensure reproducability the <code>random_state</code> variable is set. The other 10% are placed aside for validation after training. The last column is the class column and is stored in the y variables respectively.</strong></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[157]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_train</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
@@ -12176,14 +12296,14 @@ Name: 24, dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Normalization</p>
+<p><strong>2. Normalization between 0 and 1</strong></p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[56]:</div>
+<div class="prompt input_prompt">In&nbsp;[158]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">x_train</span> <span class="o">=</span> <span class="n">df_x_train</span><span class="o">.</span><span class="n">values</span>
@@ -12205,14 +12325,14 @@ Name: 24, dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Make useful categorical variables out of the single column data by one-hot encoding it.</p>
+<p><strong>3. Make useful categorical variables out of the single column data by one-hot encoding it.</strong></p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[57]:</div>
+<div class="prompt input_prompt">In&nbsp;[159]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">y_train</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
@@ -12229,7 +12349,36 @@ Name: 24, dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Train-Neural-Net">Train Neural Net<a class="anchor-link" href="#Train-Neural-Net">&#182;</a></h1>
+<p><strong> 4. Set Global Parameters</strong></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">epochsize</span> <span class="o">=</span> <span class="mi">150</span>
+<span class="n">batchsize</span> <span class="o">=</span> <span class="mi">24</span>
+<span class="n">shuffle</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Boolean (whether to shuffle the training data before each epoch) or str (for &#39;batch&#39;). </span>
+<span class="c1"># shuffle only works with sequential models and might slightly improve the result.</span>
+<span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">num_classes</span> <span class="o">=</span> <span class="mi">4</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Train-Neural-Net">Train Neural Net<a class="anchor-link" href="#Train-Neural-Net">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -12238,18 +12387,56 @@ Name: 24, dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The dimension of the hidden layers are set arbitrarily but some runs have shown that 30 is a good number. The <code>input_dim</code> Variable is set to 24 because initially there are 24 features.</p>
+<p><em>Due to a tight schedule we will not perform any cross validation. So it might happen that our accuracy estimators lack a little bit in potential of generalization. We shall live with that. Another setup of experiments would be, that we loop over some different dataframes samples up in the preprocessing steps and repeat all the steps below to finally average the results.</em></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The dimension of the hidden layers are set arbitrarily but some runs have shown that 30 is a good number. The <code>input_dim</code> Variable is set to 24 because initially there are 24 features. The aim is to build the best possible neural net.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Optimizer">Optimizer<a class="anchor-link" href="#Optimizer">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>RMSprop is a mini batch gradient descent algorithm which divides the gradient by a running average of the learning rate. More information: <a href="http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf">http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The weights are initialized by a normal distribution with mean 0 and standard deviation of 0.05.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[58]:</div>
+<div class="prompt input_prompt">In&nbsp;[186]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># constants</span>
-<span class="n">num_classes</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="n">input_dim</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 <span class="n">hidden1_dim</span> <span class="o">=</span> <span class="mi">30</span>
 <span class="n">hidden2_dim</span> <span class="o">=</span> <span class="mi">30</span>
@@ -12262,31 +12449,32 @@ Name: 24, dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[59]:</div>
+<div class="prompt input_prompt">In&nbsp;[195]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result1</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hidden1_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,)))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hidden2_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hidden1_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,),</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hidden2_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">))</span>
 
     <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span>
                   <span class="n">optimizer</span><span class="o">=</span><span class="n">RMSprop</span><span class="p">(),</span>
                   <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
 
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> 
-              <span class="n">batch_size</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
-              <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+              <span class="n">batch_size</span><span class="o">=</span><span class="n">batchsize</span><span class="p">,</span>
+              <span class="n">epochs</span><span class="o">=</span><span class="n">epochsize</span><span class="p">,</span>
               <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-              <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
               <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
     <span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">score</span><span class="p">))</span>
+    <span class="n">result1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result1</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12301,13 +12489,12 @@ Name: 24, dtype: int64</pre>
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>546/546 [==============================] - 0s 34us/step
-[0.93040293040293043]
-546/546 [==============================] - 0s 64us/step
-[0.93040293040293043, 0.9285714285714286]
-546/546 [==============================] - 0s 32us/step
-[0.93040293040293043, 0.9285714285714286, 0.9432234432234432]
-0.943223443223
+<pre>546/546 [==============================] - 0s 131us/step
+[0.95421245421245426]
+546/546 [==============================] - 0s 153us/step
+[0.95421245421245426, 0.94688644688644685]
+546/546 [==============================] - 0s 123us/step
+[0.95421245421245426, 0.94688644688644685, 0.94871794871794868]
 </pre>
 </div>
 </div>
@@ -12321,16 +12508,758 @@ Name: 24, dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="SingleAutoencoder-with-classifier">SingleAutoencoder with classifier<a class="anchor-link" href="#SingleAutoencoder-with-classifier">&#182;</a></h2>
+<h4 id="Model-Summary">Model Summary<a class="anchor-link" href="#Model-Summary">&#182;</a></h4>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[60]:</div>
+<div class="prompt input_prompt">In&nbsp;[144]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">encoder_dim1</span> <span class="o">=</span> <span class="mi">8</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt"></div>
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_640 (Dense)            (None, 30)                750       
+_________________________________________________________________
+dropout_5 (Dropout)          (None, 30)                0         
+_________________________________________________________________
+dense_641 (Dense)            (None, 30)                930       
+_________________________________________________________________
+dropout_6 (Dropout)          (None, 30)                0         
+_________________________________________________________________
+dense_642 (Dense)            (None, 4)                 124       
+=================================================================
+Total params: 1,804
+Trainable params: 1,804
+Non-trainable params: 0
+_________________________________________________________________
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Architecture">Architecture<a class="anchor-link" href="#Architecture">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[148]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plot_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">to_file</span><span class="o">=</span><span class="s1">&#39;images/robo1_nn.png&#39;</span><span class="p">,</span> <span class="n">show_shapes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_layer_names</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rankdir</span><span class="o">=</span><span class="s1">&#39;LR&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="images/robo1_nn.png" alt="MNIST Neural Net"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[196]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">result1</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt"></div>
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0.949938949939
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The "Pseudo- Cross Validation" gives a result of about 94% accuracy for a feed forward network. This shall be our benchmark for feature selection.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Finding-good-features">Finding good features<a class="anchor-link" href="#Finding-good-features">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>"Is there a good number of features for the Robo- Dataset?" For that we create a loop over some numbers (i.e. dimension of hidden layer from the single autoencoder) and get the respective result.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The architecture within those loops is quite special. For that we recommend to have a look at the neural net visualization below.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="The-parameters-for-the-ensemble-training">The parameters for the ensemble training<a class="anchor-link" href="#The-parameters-for-the-ensemble-training">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[200]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># the initial coding dimension s.t. there is no feature selection at the beginning</span>
+<span class="n">encoding_dim</span> <span class="o">=</span> <span class="mi">24</span>
+<span class="c1"># dimension of the neural net layer1</span>
+<span class="n">hidden1_dim</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="c1"># dimension of the second neural net layer</span>
+<span class="n">hidden2_dim</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">epoch_size</span> <span class="o">=</span> <span class="mi">150</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">24</span>
+<span class="n">shuffle</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">result2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;encoding_dim/features&#39;</span><span class="p">:</span> <span class="p">[]</span>
+           <span class="p">,</span><span class="s1">&#39;compression_level&#39;</span><span class="p">:</span> <span class="p">[]</span>
+           <span class="p">,</span><span class="s1">&#39;auto_classifier_acc&#39;</span><span class="p">:</span> <span class="p">[]</span>
+           <span class="p">,</span><span class="s1">&#39;selected_classifier_acc&#39;</span><span class="p">:</span> <span class="p">[]</span>
+           <span class="p">,</span><span class="s1">&#39;features&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The idea is:</p>
+<ul>
+<li>reduce the number of features <code>encoding_dim</code> iteratively by training an auto_classifier network</li>
+<li>after training, the weights of the first layer are analyzed.</li>
+<li>therefore sum up the weights for each input node and take the <code>encoding_dim</code> number as new features</li>
+<li>test the new features with the pre- defined neural net and see which selection is best.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[201]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">while</span> <span class="n">encoding_dim</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">main_input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;main_input&#39;</span><span class="p">)</span>
+
+    <span class="n">encoding_layer</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">encoding_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)</span>
+    <span class="n">encoding_layer_output</span> <span class="o">=</span> <span class="n">encoding_layer</span><span class="p">(</span><span class="n">main_input</span><span class="p">)</span>
+    <span class="n">decoding_layer_output</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span>
+                                  <span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;decoder_output&#39;</span>
+                                  <span class="p">,</span><span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)(</span><span class="n">encoding_layer_output</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">hidden1_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)(</span><span class="n">encoding_layer_output</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">hidden2_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">classifier_output</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;main_output&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">auto_classifier</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">main_input</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">classifier_output</span><span class="p">,</span> <span class="n">decoding_layer_output</span><span class="p">])</span>
+
+    <span class="n">auto_classifier</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">RMSprop</span><span class="p">(),</span>
+                            <span class="n">loss</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;main_output&#39;</span><span class="p">:</span> <span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span> <span class="s1">&#39;decoder_output&#39;</span><span class="p">:</span> <span class="s1">&#39;mean_squared_error&#39;</span><span class="p">},</span>
+                            <span class="n">loss_weights</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;main_output&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s1">&#39;decoder_output&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">},</span>
+                            <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
+
+    <span class="n">auto_classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">({</span><span class="s1">&#39;main_input&#39;</span><span class="p">:</span> <span class="n">x_train</span><span class="p">},</span>
+                        <span class="p">{</span><span class="s1">&#39;main_output&#39;</span><span class="p">:</span> <span class="n">y_train</span><span class="p">,</span> <span class="s1">&#39;decoder_output&#39;</span><span class="p">:</span> <span class="n">x_train</span><span class="p">},</span>
+                        <span class="n">epochs</span><span class="o">=</span><span class="n">epoch_size</span><span class="p">,</span> 
+                        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                        <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+                        <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                        <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">auto_classifier</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x_val</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="n">y_val</span><span class="p">,</span> <span class="n">x_val</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">result2</span><span class="p">[</span><span class="s1">&#39;encoding_dim/features&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">encoding_dim</span><span class="p">)</span>
+    <span class="n">result2</span><span class="p">[</span><span class="s1">&#39;compression_level&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">encoding_dim</span><span class="o">/</span><span class="mi">24</span><span class="p">)</span>
+    <span class="n">result2</span><span class="p">[</span><span class="s1">&#39;auto_classifier_acc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accuracy</span><span class="p">)</span>
+
+    <span class="n">encoding_weights</span> <span class="o">=</span> <span class="n">encoding_layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
+    <span class="n">sum_of_weights</span> <span class="o">=</span> <span class="p">{</span><span class="n">index</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">encoding_weights</span><span class="p">[</span><span class="mi">0</span><span class="p">])}</span>
+
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">sum_of_weights</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">encoding_dim</span><span class="p">):</span>
+        <span class="n">max_key</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">key</span><span class="p">:</span> <span class="n">weights</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_key</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">weights</span><span class="p">[</span><span class="n">max_key</span><span class="p">]</span>
+    
+    <span class="n">result2</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+    <span class="n">x_train_selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">features</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_train</span><span class="p">])</span>
+    <span class="n">x_val_selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">features</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_val</span><span class="p">])</span>
+
+    <span class="n">input_dim_new</span> <span class="o">=</span> <span class="n">x_train_selected</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">accuracy_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">model_new</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+        <span class="n">model_new</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hidden1_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim_new</span><span class="p">,),</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">))</span>
+        <span class="n">model_new</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hidden2_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">))</span>
+        <span class="n">model_new</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">))</span>
+
+        <span class="n">model_new</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span>
+                      <span class="n">optimizer</span><span class="o">=</span><span class="n">RMSprop</span><span class="p">(),</span>
+                      <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
+
+        <span class="n">model_new</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train_selected</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> 
+                  <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                  <span class="n">epochs</span><span class="o">=</span><span class="n">epoch_size</span><span class="p">,</span>
+                  <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                  <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+                  <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">model_new</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_val_selected</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">accuracy_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+    <span class="n">result2</span><span class="p">[</span><span class="s1">&#39;selected_classifier_acc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">accuracy_list</span><span class="p">))</span>
+    <span class="n">encoding_dim</span> <span class="o">-=</span><span class="mi">1</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result2</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt"></div>
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 88us/step
+{&#39;encoding_dim/features&#39;: [24], &#39;compression_level&#39;: [0.0], &#39;auto_classifier_acc&#39;: [0.91575091575091572], &#39;selected_classifier_acc&#39;: [0.93223443223443225], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17]]}
+546/546 [==============================] - 0s 86us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23], &#39;compression_level&#39;: [0.0, 0.04166666666666663], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17]]}
+546/546 [==============================] - 0s 86us/step
+546/546 [==============================] - 0s 64us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16]]}
+546/546 [==============================] - 0s 86us/step
+546/546 [==============================] - 0s 110us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23]]}
+546/546 [==============================] - 0s 109us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 114us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11]]}
+546/546 [==============================] - 0s 86us/step
+546/546 [==============================] - 0s 114us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15]]}
+546/546 [==============================] - 0s 86us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10]]}
+546/546 [==============================] - 0s 145us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5, 0.5416666666666667], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225, 0.91575091575091572], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866, 0.77655677655677657], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10], [2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5, 0.5416666666666667, 0.5833333333333333], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225, 0.91575091575091572, 0.90476190476190477], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866, 0.77655677655677657, 0.76190476190476186], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10], [2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1], [12, 8, 6, 10, 3, 4, 1, 5, 11, 15]]}
+546/546 [==============================] - 0s 86us/step
+546/546 [==============================] - 0s 143us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5, 0.5416666666666667, 0.5833333333333333, 0.625], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225, 0.91575091575091572, 0.90476190476190477, 0.9285714285714286], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866, 0.77655677655677657, 0.76190476190476186, 0.75274725274725274], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10], [2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1], [12, 8, 6, 10, 3, 4, 1, 5, 11, 15], [8, 4, 9, 6, 7, 12, 10, 1, 3]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 114us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5, 0.5416666666666667, 0.5833333333333333, 0.625, 0.6666666666666667], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225, 0.91575091575091572, 0.90476190476190477, 0.9285714285714286, 0.91941391941391937], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866, 0.77655677655677657, 0.76190476190476186, 0.75274725274725274, 0.7783882783882784], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10], [2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1], [12, 8, 6, 10, 3, 4, 1, 5, 11, 15], [8, 4, 9, 6, 7, 12, 10, 1, 3], [10, 8, 2, 3, 4, 11, 6, 5]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5, 0.5416666666666667, 0.5833333333333333, 0.625, 0.6666666666666667, 0.7083333333333333], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225, 0.91575091575091572, 0.90476190476190477, 0.9285714285714286, 0.91941391941391937, 0.89926739926739929], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866, 0.77655677655677657, 0.76190476190476186, 0.75274725274725274, 0.7783882783882784, 0.76923076923076927], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10], [2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1], [12, 8, 6, 10, 3, 4, 1, 5, 11, 15], [8, 4, 9, 6, 7, 12, 10, 1, 3], [10, 8, 2, 3, 4, 11, 6, 5], [8, 6, 7, 9, 5, 3, 12]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5, 0.5416666666666667, 0.5833333333333333, 0.625, 0.6666666666666667, 0.7083333333333333, 0.75], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225, 0.91575091575091572, 0.90476190476190477, 0.9285714285714286, 0.91941391941391937, 0.89926739926739929, 0.89743589743589747], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866, 0.77655677655677657, 0.76190476190476186, 0.75274725274725274, 0.7783882783882784, 0.76923076923076927, 0.74542124542124544], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10], [2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1], [12, 8, 6, 10, 3, 4, 1, 5, 11, 15], [8, 4, 9, 6, 7, 12, 10, 1, 3], [10, 8, 2, 3, 4, 11, 6, 5], [8, 6, 7, 9, 5, 3, 12], [6, 11, 10, 3, 8, 2]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 86us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5, 0.5416666666666667, 0.5833333333333333, 0.625, 0.6666666666666667, 0.7083333333333333, 0.75, 0.7916666666666666], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225, 0.91575091575091572, 0.90476190476190477, 0.9285714285714286, 0.91941391941391937, 0.89926739926739929, 0.89743589743589747, 0.86263736263736268], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866, 0.77655677655677657, 0.76190476190476186, 0.75274725274725274, 0.7783882783882784, 0.76923076923076927, 0.74542124542124544, 0.84615384615384615], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10], [2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1], [12, 8, 6, 10, 3, 4, 1, 5, 11, 15], [8, 4, 9, 6, 7, 12, 10, 1, 3], [10, 8, 2, 3, 4, 11, 6, 5], [8, 6, 7, 9, 5, 3, 12], [6, 11, 10, 3, 8, 2], [14, 4, 2, 10, 11]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 114us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5, 0.5416666666666667, 0.5833333333333333, 0.625, 0.6666666666666667, 0.7083333333333333, 0.75, 0.7916666666666666, 0.8333333333333334], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225, 0.91575091575091572, 0.90476190476190477, 0.9285714285714286, 0.91941391941391937, 0.89926739926739929, 0.89743589743589747, 0.86263736263736268, 0.86263736263736268], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866, 0.77655677655677657, 0.76190476190476186, 0.75274725274725274, 0.7783882783882784, 0.76923076923076927, 0.74542124542124544, 0.84615384615384615, 0.82967032967032972], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10], [2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1], [12, 8, 6, 10, 3, 4, 1, 5, 11, 15], [8, 4, 9, 6, 7, 12, 10, 1, 3], [10, 8, 2, 3, 4, 11, 6, 5], [8, 6, 7, 9, 5, 3, 12], [6, 11, 10, 3, 8, 2], [14, 4, 2, 10, 11], [14, 13, 0, 10]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 143us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5, 0.5416666666666667, 0.5833333333333333, 0.625, 0.6666666666666667, 0.7083333333333333, 0.75, 0.7916666666666666, 0.8333333333333334, 0.875], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225, 0.91575091575091572, 0.90476190476190477, 0.9285714285714286, 0.91941391941391937, 0.89926739926739929, 0.89743589743589747, 0.86263736263736268, 0.86263736263736268, 0.80219780219780223], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866, 0.77655677655677657, 0.76190476190476186, 0.75274725274725274, 0.7783882783882784, 0.76923076923076927, 0.74542124542124544, 0.84615384615384615, 0.82967032967032972, 0.73443223443223449], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10], [2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1], [12, 8, 6, 10, 3, 4, 1, 5, 11, 15], [8, 4, 9, 6, 7, 12, 10, 1, 3], [10, 8, 2, 3, 4, 11, 6, 5], [8, 6, 7, 9, 5, 3, 12], [6, 11, 10, 3, 8, 2], [14, 4, 2, 10, 11], [14, 13, 0, 10], [14, 2, 4]]}
+546/546 [==============================] - 0s 129us/step
+546/546 [==============================] - 0s 114us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5, 0.5416666666666667, 0.5833333333333333, 0.625, 0.6666666666666667, 0.7083333333333333, 0.75, 0.7916666666666666, 0.8333333333333334, 0.875, 0.9166666666666666], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225, 0.91575091575091572, 0.90476190476190477, 0.9285714285714286, 0.91941391941391937, 0.89926739926739929, 0.89743589743589747, 0.86263736263736268, 0.86263736263736268, 0.80219780219780223, 0.78754578754578752], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866, 0.77655677655677657, 0.76190476190476186, 0.75274725274725274, 0.7783882783882784, 0.76923076923076927, 0.74542124542124544, 0.84615384615384615, 0.82967032967032972, 0.73443223443223449, 0.74175824175824179], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10], [2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1], [12, 8, 6, 10, 3, 4, 1, 5, 11, 15], [8, 4, 9, 6, 7, 12, 10, 1, 3], [10, 8, 2, 3, 4, 11, 6, 5], [8, 6, 7, 9, 5, 3, 12], [6, 11, 10, 3, 8, 2], [14, 4, 2, 10, 11], [14, 13, 0, 10], [14, 2, 4], [14, 13]]}
+546/546 [==============================] - 0s 114us/step
+546/546 [==============================] - 0s 114us/step
+{&#39;encoding_dim/features&#39;: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1], &#39;compression_level&#39;: [0.0, 0.04166666666666663, 0.08333333333333337, 0.125, 0.16666666666666663, 0.20833333333333337, 0.25, 0.29166666666666663, 0.33333333333333337, 0.375, 0.41666666666666663, 0.45833333333333337, 0.5, 0.5416666666666667, 0.5833333333333333, 0.625, 0.6666666666666667, 0.7083333333333333, 0.75, 0.7916666666666666, 0.8333333333333334, 0.875, 0.9166666666666666, 0.9583333333333334], &#39;auto_classifier_acc&#39;: [0.91575091575091572, 0.9432234432234432, 0.92490842490842495, 0.90476190476190477, 0.92124542124542119, 0.92124542124542119, 0.91391941391941389, 0.90293040293040294, 0.93772893772893773, 0.91758241758241754, 0.93223443223443225, 0.91941391941391937, 0.93223443223443225, 0.91575091575091572, 0.90476190476190477, 0.9285714285714286, 0.91941391941391937, 0.89926739926739929, 0.89743589743589747, 0.86263736263736268, 0.86263736263736268, 0.80219780219780223, 0.78754578754578752, 0.68681318681318682], &#39;selected_classifier_acc&#39;: [0.93223443223443225, 0.92490842490842495, 0.91941391941391937, 0.85347985347985345, 0.88827838827838823, 0.83699633699633702, 0.80402930402930406, 0.79670329670329665, 0.80219780219780223, 0.80402930402930406, 0.81135531135531136, 0.80586080586080588, 0.81868131868131866, 0.77655677655677657, 0.76190476190476186, 0.75274725274725274, 0.7783882783882784, 0.76923076923076927, 0.74542124542124544, 0.84615384615384615, 0.82967032967032972, 0.73443223443223449, 0.74175824175824179, 0.66300366300366298], &#39;features&#39;: [[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 15, 2, 11, 0, 16, 23, 13, 19, 18, 14, 17], [12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5, 3, 9, 2, 0, 23, 13, 17, 18, 16, 14], [8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22, 13, 0, 11, 15, 23, 16, 14, 17], [20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0, 23, 22, 9, 15, 19, 11, 16], [12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20, 0, 23, 13, 15, 11, 14], [12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10, 0, 15, 13, 11, 23], [8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20, 15, 22, 11, 23], [8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 10, 9, 22, 0], [8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15, 21, 11], [4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7, 11], [8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15], [4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10], [12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10], [2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1], [12, 8, 6, 10, 3, 4, 1, 5, 11, 15], [8, 4, 9, 6, 7, 12, 10, 1, 3], [10, 8, 2, 3, 4, 11, 6, 5], [8, 6, 7, 9, 5, 3, 12], [6, 11, 10, 3, 8, 2], [14, 4, 2, 10, 11], [14, 13, 0, 10], [14, 2, 4], [14, 13], [14]]}
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Summary">Summary<a class="anchor-link" href="#Summary">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[149]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">auto_classifier</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt"></div>
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+main_input (InputLayer)         (None, 24)           0                                            
+__________________________________________________________________________________________________
+dense_622 (Dense)               (None, 13)           325         main_input[0][0]                 
+__________________________________________________________________________________________________
+dense_623 (Dense)               (None, 30)           420         dense_622[0][0]                  
+__________________________________________________________________________________________________
+dense_624 (Dense)               (None, 30)           930         dense_623[0][0]                  
+__________________________________________________________________________________________________
+main_output (Dense)             (None, 4)            124         dense_624[0][0]                  
+__________________________________________________________________________________________________
+decoder_output (Dense)          (None, 24)           336         dense_622[0][0]                  
+==================================================================================================
+Total params: 2,135
+Trainable params: 2,135
+Non-trainable params: 0
+__________________________________________________________________________________________________
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Architecture">Architecture<a class="anchor-link" href="#Architecture">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[150]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plot_model</span><span class="p">(</span><span class="n">auto_classifier</span><span class="p">,</span> <span class="n">to_file</span><span class="o">=</span><span class="s1">&#39;images/robo2_auto_class_LR.png&#39;</span><span class="p">,</span> <span class="n">show_shapes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_layer_names</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rankdir</span><span class="o">=</span><span class="s1">&#39;LR&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="images/robo2_auto_class_LR.png" alt="MNIST Neural Net"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Results">Results<a class="anchor-link" href="#Results">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[202]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">result2</span><span class="p">)</span>
+<span class="n">result_df</span><span class="p">[</span><span class="s1">&#39;neural_net_acc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.949938949939</span>
+<span class="n">result_df</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt output_prompt">Out[202]:</div>
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>auto_classifier_acc</th>
+      <th>compression_level</th>
+      <th>encoding_dim/features</th>
+      <th>features</th>
+      <th>selected_classifier_acc</th>
+      <th>neural_net_acc</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.915751</td>
+      <td>0.000000</td>
+      <td>24</td>
+      <td>[12, 10, 8, 6, 1, 20, 4, 3, 5, 22, 21, 7, 9, 1...</td>
+      <td>0.932234</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.943223</td>
+      <td>0.041667</td>
+      <td>23</td>
+      <td>[12, 8, 20, 7, 11, 6, 10, 15, 4, 21, 22, 1, 5,...</td>
+      <td>0.924908</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.924908</td>
+      <td>0.083333</td>
+      <td>22</td>
+      <td>[8, 12, 6, 20, 1, 21, 7, 2, 4, 5, 3, 10, 9, 22...</td>
+      <td>0.919414</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.904762</td>
+      <td>0.125000</td>
+      <td>21</td>
+      <td>[20, 8, 12, 2, 6, 3, 5, 1, 10, 13, 21, 4, 7, 0...</td>
+      <td>0.853480</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.921245</td>
+      <td>0.166667</td>
+      <td>20</td>
+      <td>[12, 8, 4, 6, 10, 5, 3, 21, 9, 2, 7, 1, 22, 20...</td>
+      <td>0.888278</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.921245</td>
+      <td>0.208333</td>
+      <td>19</td>
+      <td>[12, 8, 4, 6, 2, 5, 7, 21, 1, 3, 20, 9, 22, 10...</td>
+      <td>0.836996</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0.913919</td>
+      <td>0.250000</td>
+      <td>18</td>
+      <td>[8, 12, 6, 1, 2, 5, 7, 4, 3, 10, 9, 21, 0, 20,...</td>
+      <td>0.804029</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.902930</td>
+      <td>0.291667</td>
+      <td>17</td>
+      <td>[8, 12, 4, 6, 3, 2, 20, 5, 1, 11, 21, 15, 7, 1...</td>
+      <td>0.796703</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0.937729</td>
+      <td>0.333333</td>
+      <td>16</td>
+      <td>[8, 12, 1, 6, 2, 4, 3, 7, 9, 10, 20, 22, 5, 15...</td>
+      <td>0.802198</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0.917582</td>
+      <td>0.375000</td>
+      <td>15</td>
+      <td>[4, 22, 8, 6, 1, 3, 10, 0, 2, 20, 5, 9, 12, 7,...</td>
+      <td>0.804029</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0.932234</td>
+      <td>0.416667</td>
+      <td>14</td>
+      <td>[8, 12, 6, 4, 9, 10, 3, 20, 1, 5, 2, 7, 21, 15]</td>
+      <td>0.811355</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>0.919414</td>
+      <td>0.458333</td>
+      <td>13</td>
+      <td>[4, 0, 8, 6, 22, 3, 2, 5, 12, 23, 9, 1, 10]</td>
+      <td>0.805861</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>0.932234</td>
+      <td>0.500000</td>
+      <td>12</td>
+      <td>[12, 8, 6, 5, 2, 3, 4, 7, 1, 20, 13, 10]</td>
+      <td>0.818681</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>0.915751</td>
+      <td>0.541667</td>
+      <td>11</td>
+      <td>[2, 11, 12, 5, 8, 3, 6, 4, 20, 9, 1]</td>
+      <td>0.776557</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>0.904762</td>
+      <td>0.583333</td>
+      <td>10</td>
+      <td>[12, 8, 6, 10, 3, 4, 1, 5, 11, 15]</td>
+      <td>0.761905</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>0.928571</td>
+      <td>0.625000</td>
+      <td>9</td>
+      <td>[8, 4, 9, 6, 7, 12, 10, 1, 3]</td>
+      <td>0.752747</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>0.919414</td>
+      <td>0.666667</td>
+      <td>8</td>
+      <td>[10, 8, 2, 3, 4, 11, 6, 5]</td>
+      <td>0.778388</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>0.899267</td>
+      <td>0.708333</td>
+      <td>7</td>
+      <td>[8, 6, 7, 9, 5, 3, 12]</td>
+      <td>0.769231</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>0.897436</td>
+      <td>0.750000</td>
+      <td>6</td>
+      <td>[6, 11, 10, 3, 8, 2]</td>
+      <td>0.745421</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>0.862637</td>
+      <td>0.791667</td>
+      <td>5</td>
+      <td>[14, 4, 2, 10, 11]</td>
+      <td>0.846154</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>0.862637</td>
+      <td>0.833333</td>
+      <td>4</td>
+      <td>[14, 13, 0, 10]</td>
+      <td>0.829670</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>0.802198</td>
+      <td>0.875000</td>
+      <td>3</td>
+      <td>[14, 2, 4]</td>
+      <td>0.734432</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>0.787546</td>
+      <td>0.916667</td>
+      <td>2</td>
+      <td>[14, 13]</td>
+      <td>0.741758</td>
+      <td>0.949939</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>0.686813</td>
+      <td>0.958333</td>
+      <td>1</td>
+      <td>[14]</td>
+      <td>0.663004</td>
+      <td>0.949939</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[203]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;results/robo_results1.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12340,7 +13269,325 @@ Name: 24, dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[90]:</div>
+<div class="prompt input_prompt">In&nbsp;[204]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result_df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;encoding_dim/features&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;selected_classifier_acc&#39;</span><span class="p">,</span> <span class="s1">&#39;neural_net_acc&#39;</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt output_prompt">Out[204]:</div>
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x221a8d090f0&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+<div class="prompt"></div>
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABIQAAAJUCAYAAABkPP0jAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
+AAALEgAACxIB0t1+/AAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDIuMS4wLCBo
+dHRwOi8vbWF0cGxvdGxpYi5vcmcvpW3flQAAIABJREFUeJzs3Xu4nWV95//PbRJAKKBCPEB0ElsQ
+icnmEKLi2AQCBASxsVA5SHGo0lYF0QFFKWl/9sdUC6MXMooywjCxKOFQDpWIlIbUVg4m4Rww5WCU
+iEWINQIaSMI9f+zdGMIOWUn2Zmflfr2uy8u1nnWvtb57sZPs/V7P86xSaw0AAAAA7XjZUA8AAAAA
+wEtLEAIAAABojCAEAAAA0BhBCAAAAKAxghAAAABAYwQhAAAAgMYIQgAAAACNEYQAAAAAGiMIAQAA
+ADRGEAIAAABozPCheuIdd9yxjh49eqieHgAAAGCzM3/+/CdqrSPXtW7IgtDo0aMzb968oXp6AAAA
+gM1OKeXHnaxzyBgAAABAYwQhAAAAgMYIQgAAAACNGbJzCAEAAEArli9fnsWLF2fZsmVDPQqbia22
+2iqjRo3KiBEjNuj+ghAAAAAMssWLF2fbbbfN6NGjU0oZ6nHocrXWLFmyJIsXL86YMWM26DEcMgYA
+AACDbNmyZdlhhx3EIAZEKSU77LDDRu1xJggBAADAS0AMYiBt7PeTIAQAAADQGOcQAgAAgJfY6NOv
+G9DHW/S5Qwf08T7wgQ/ksMMOyxFHHLF+cyxalJtvvjnHHHPMoD/fnDlzcs455+Tb3/72ej3X2nzw
+gx/MJz7xiey+++65/PLLM3369Lz2ta/N2WefnRkzZuRLX/rSgDzPpkIQAgAAAAbEokWL8s1vfnO9
+g9Cm4Otf//qqyxdeeGG+8pWvZL/99kuSTJgwoePHWbFiRYYP3/Rzi0PGAAAAoAFPP/10Dj300PT0
+9OQtb3lLZs6cmfnz52fSpEnZe++9M3Xq1PzsZz97wf3WtubBBx/MAQcckJ6enuy111556KGHcvrp
+p+df/uVfsscee+SLX/xiVq5cmdNOOy377LNPxo8fn6997WtJej8l66Mf/Wh23333HHroofn5z3/+
+orPPnTs3++67b3p6ejJx4sQ8+eSTz7v9Bz/4Qfbdd9/sueee2XfffbNw4cIkyYIFCzJx4sTsscce
+GT9+fB544IF+X4ckmTx5cubNm5fPfvaz+dd//df82Z/9WU477bTMmTMnhx122KrX8IQTTsg+++yT
+PffcM9dcc02S5OKLL86RRx6Zd7/73TnooIP6/RqeeuqpTJkyJXvttVfGjRu36r5JMmPGjIwfPz49
+PT057rjjkiSPPfZYpk2blp6envT09OTmm29+8f/A62nTT1YAAADARrv++uuz00475brreg9XW7p0
+aQ455JBcc801GTlyZGbOnJkzzjgjF1100ar7LF++PCeddFK/a4499ticfvrpmTZtWpYtW5bnnnsu
+n/vc5553GNcFF1yQ7bffPnPnzs0zzzyTd7zjHTnooINyxx13ZOHChbnnnnvy2GOPZffdd88JJ5zQ
+79zPPvts3ve+92XmzJnZZ5998qtf/Sovf/nLn7dmt912y/e+970MHz48N954Yz7zmc/kyiuvzFe/
++tV87GMfy7HHHptnn302K1euzKxZs17wOqxu+vTpmT17ds4555xMmDAhc+bMWXXbWWedlf333z8X
+XXRRfvnLX2bixIk54IADkiS33HJL7r777rzqVa/q9+vYaqutctVVV2W77bbLE088kbe97W05/PDD
+c9999+Wss87K97///ey44475xS9+kSQ5+eSTM2nSpFx11VVZuXJlnnrqqU7/U3dEEAIAAIAGjBs3
+Lqeeemo+9alP5bDDDssrX/nK3HvvvTnwwAOTJCtXrszrXve6591n4cKF/a558skn89Of/jTTpk1L
+0hs7+nPDDTfk7rvvzhVXXJGkN7488MAD+d73vpejjz46w4YNy0477ZT9999/rXMvXLgwr3vd67LP
+PvskSbbbbrsXrFm6dGmOP/74PPDAAymlZPny5UmSt7/97TnrrLOyePHivPe9780uu+zygtfhne98
+Z8ev4Q033JBrr70255xzTpJk2bJl+clPfpIkOfDAA9cag5LevaI+85nP5Hvf+15e9rKX5ac//Wke
+e+yxzJ49O0cccUR23HHHJFn1GLNnz86MGTOSJMOGDcv222/f8ZydEIQAAACgAbvuumvmz5+fWbNm
+5dOf/nQOPPDAjB07Nrfccsta71Nr7XfNr371q46es9aa8847L1OnTn3e9lmzZnX8sem11nWuPfPM
+M7PffvvlqquuyqJFizJ58uQkyTHHHJO3vvWtue666zJ16tR8/etfz/777/+81+Gggw7K9OnTO57l
+yiuvzJve9Kbnbb/tttuyzTbbvOh9L7nkkjz++OOZP39+RowYkdGjR2fZsmUdfX2DwTmEAAAAoAGP
+Pvpott5667z//e/Pqaeemttuuy2PP/74qtizfPnyLFiw4Hn3edOb3tTvmu222y6jRo3K1VdfnSR5
+5pln8utf/zrbbrvt887vM3Xq1Jx//vmr9tj5t3/7tzz99NP5/d///Vx66aVZuXJlfvazn+Wmm25a
+69y77bZbHn300cydOzdJ8uSTT2bFihXPW7N06dLsvPPOSXrP5/OfHn744bzxjW/MySefnMMPPzx3
+3333C16H22+/vePXcOrUqTnvvPNSa02S3HHHHR3fd+nSpXn1q1+dESNG5KabbsqPf/zjJMmUKVNy
+2WWXZcmSJUmy6pCxKVOm5Pzzz0/Su2dWpxGuU/YQAgAAgJfYQH9MfCfuueeenHbaaXnZy16WESNG
+5Pzzz8/w4cNz8sknZ+nSpVmxYkVOOeWUjB07dtV9tthii1xxxRX9rvnGN76RP/3TP8306dMzYsSI
+XH755Rk/fnyGDx+enp6efOADH8jHPvaxLFq0KHvttVdqrRk5cmSuvvrqTJs2LbNnz864ceOy6667
+ZtKkSWude4sttsjMmTNz0kkn5Te/+U1e/vKX58Ybb3zemk9+8pM5/vjj84UvfOF5h5/NnDkzf/d3
+f5cRI0bkta99baZPn565c+e+4HXo1JlnnplTTjkl48ePT601o0eP7vhj74899ti8+93vzoQJE7LH
+Hntkt912S5KMHTs2Z5xxRiZNmpRhw4Zlzz33zMUXX5xzzz03J554Yi688MIMGzYs559/ft7+9rd3
+POu6lP+sWi+1CRMm1Hnz5g3JcwMAAMBL6f7778+b3/zmoR6DzUx/31ellPm11gnruq9DxgAAAAAa
+45AxAAAAYJMwbdq0/OhHP3rets9//vMvOCn1puyee+7Jcccd97xtW265ZW677bYhmqh/ghAAAACw
+SbjqqquGeoSNNm7cuNx5551DPcY6OWQMAAAAoDGCEAAAAEBjBCEAAACAxmye5xD6q+3Xc/3SwZlj
+Q6zP7N06d9K9s3fr3En3zt6tcyfdO3u3zp107+zdOnfSvbN369xJ987erXMn3Tt7t86ddO/s3Tp3
+0r2zd9PcUy9LHl322+sXTB7g59+I1+LROzpfu9OeG/48A2195k66d/ZBmtseQgAAAMCgGD16dJ54
+4okBe7yrr746991334A9XssEIQAAAGCDrFy58iV9PkFo4AhCAAAA0IBFixblzW9+cz70oQ9l7Nix
+Oeigg/Kb3/wmDy16JAcf+5HsffAxeee0E/LDB3+UJPnAKX+ZK75946r7/84u70iSzJkzJ/vtt1+O
+OeaYjBs3LknyB3/wB9l7770zduzYXHDBBRs1T5I89NBDOfjgg7P33nvnne98Z374wx/m5ptvzrXX
+XpvTTjste+yxRx5a9Ei/j/u/L/n77POu96fngPflDz90an7d95iPPfZYpk2blp6envT09OTmm29O
+ksyYMSPjx49PT09PjjvuuA14ZbuTIAQAAACNeOCBB/KRj3wkCxYsyCte8YpceeWVOfGT/3/O++tP
+Zf7138w5Z348H/7036zzcX7wgx/krLPOWrW3zkUXXZT58+dn3rx5+dKXvpQlS5Zs8DxJcuKJJ+a8
+887L/Pnzc8455+TDH/5w9t133xx++OE5++yzc+edd+Z3R7++38d87yH7Z+6sv8tdN87Mm39vTC78
+1jVJkpNPPjmTJk3KXXfdldtvvz1jx47NggULctZZZ2X27Nm56667cu6553Y09+Zg8zypNAAAAPAC
+Y8aMyR577JEk2XvvvbNo0aLcPP/uHPmnn1y15plnn13n40ycODFjxoxZdf1LX/pSrrrqqiTJI488
+kgceeCA77LDDBs3z1FNP5eabb86RRx7525meeaazLzDJvQsfyl/87Zfzy189laee/nWmTnp7kmT2
+7NmZMWNGkmTYsGHZfvvtM2PGjBxxxBHZcccdkySvetWrOn6ebicIAQAAQCO23HLLVZeHDRuWxx57
+LK/Ybtvc+Y+XvmDt8OHD8txzzyVJaq15dvnyVbdts802qy7PmTMnN954Y2655ZZsvfXWmTx5cpYt
+W/aCx+tknt/85jd57rnn8opXvCJ33nnnen99SfKBj/9lrr7wC+kZu2sunnlt5twyf61ra60ppWzQ
+83Q7QQgAAABeahvzMfEDaLvttsuY1++Uy//hH3Pkuw9MrTV33/dAesbumtGjdsr8e+7PHx1+UK75
+7pwsX76i38dYunRpXvnKV2brrbfOD3/4w9x6660bP9OYMbn88stz5JFH9s50993p6enJtttumyef
+fPJF7//kU7/O616zY5YvX55LrvpOdn7tq5MkU6ZMyfnnn59TTjklK1euzNNPP50pU6Zk2rRp+fjH
+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
+IAQAAADQGEEIAAAAoDGCEAAAAEBjOgpCpZSDSykLSykPllJO7+f2LUspM/tuv62UMnqgBwUAAABg
+YKwzCJVShiX5cpJDkuye5OhSyu5rLPuTJP9Ra/29JF9M8vmBHhQAAACAgdHJHkITkzxYa3241vps
+kkuTvGeNNe9J8n/7Ll+RZEoppQzcmAAAAAAMlE6C0M5JHlnt+uK+bf2uqbWuSLI0yQ4DMSAAAAAA
+A6vUWl98QSlHJplaa/1g3/XjkkystZ602poFfWsW911/qG/NkjUe68QkJ/ZdfVOShQP1haxhxyRP
+DNJjD7Zunb1b5066d/ZunTvp3tm7de6ke2fv1rmT7p29W+dOunf2bp076d7Zu3XupHtn79a5k+6d
+vVvnTrp39m6dO+ne2bt17mRwZ/8vtdaR61o0vIMHWpzk9atdH5Xk0bWsWVxKGZ5k+yS/WPOBaq0X
+JLmgg+fcKKWUebXWCYP9PIOhW2fv1rmT7p29W+dOunf2bp076d7Zu3XupHtn79a5k+6dvVvnTrp3
+9m6dO+ne2bt17qR7Z+/WuZPunb1b5066d/ZunTvZNGbv5JCxuUl2KaWMKaVskeSoJNeusebaJMf3
+XT4iyey6rl2PAAAAABgS69xDqNa6opTy0STfTTIsyUW11gWllM8mmVdrvTbJhUm+UUp5ML17Bh01
+mEMDAAAAsOE6OWQstdZZSWatsW36apeXJTlyYEfbKIN+WNog6tbZu3XupHtn79a5k+6dvVvnTrp3
+9m6dO+ne2bt17qR7Z+/WuZPunb1b5066d/ZunTvp3tm7de6ke2fv1rmT7p29W+dONoHZ13lSaQAA
+AAA2L52cQwgAAACAzYggBAAAANAYQQgAAACgMZtlECqlvHqoZwAAgI1RSvndUsqppZRzSyn/s5Ty
+Z6WU7Yd6rnUppWxRSvnjUsoBfdePKaX8r1LKR0opI4Z6vhdTSjm5lPL6oZ5jfZVS3lpK2a7v8stL
+Kf9fKeUfSimf74bvmdWVUv5rKeUTpZSDhnqW9VVKmTHUM3SqlDKxlLJP3+Xd+17zdw31XOtSStmt
+lDKllPI7a2w/eKhm6mZdf1LpUsqr1tyUZH6SPdP79f3ipZ+qM6WU1yb5yyTPJZme5KQkf5jk/iQf
+q7X+bAjHW6u+f2w+nWRUku/UWr+52m1fqbV+eMiG2willO/UWg8Z6jn60/cP+aeT/EGSkX2bf57k
+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
+AABJRU5ErkJggg==
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Obviously the procedure yields the best performance for 13 features. That corresponds to a compression of about 45%.
+To go a little bit deeper we analyze the confusion matrix of the 13- feature version of the Neural Net.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Single-Autoencoder-with-classifier">Single Autoencoder with classifier<a class="anchor-link" href="#Single-Autoencoder-with-classifier">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[177]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">encoder_dim1</span> <span class="o">=</span> <span class="mi">13</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[178]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">main_input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;main_input&#39;</span><span class="p">)</span>
@@ -12363,9 +13610,9 @@ Name: 24, dtype: int64</pre>
 
 <span class="n">auto_classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">({</span><span class="s1">&#39;main_input&#39;</span><span class="p">:</span> <span class="n">x_train</span><span class="p">},</span>
                     <span class="p">{</span><span class="s1">&#39;main_output&#39;</span><span class="p">:</span> <span class="n">y_train</span><span class="p">,</span> <span class="s1">&#39;decoder_output&#39;</span><span class="p">:</span> <span class="n">x_train</span><span class="p">},</span>
-                    <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
-                    <span class="n">batch_size</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
-                    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">epochs</span><span class="o">=</span><span class="n">epochsize</span><span class="p">,</span> 
+                    <span class="n">batch_size</span><span class="o">=</span><span class="n">batchsize</span><span class="p">,</span>
+                    <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
                     <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
                     <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
@@ -12385,47 +13632,8 @@ Name: 24, dtype: int64</pre>
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>546/546 [==============================] - 0s 83us/step
-0.880952380952
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[118]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">encoding_weights</span> <span class="o">=</span> <span class="n">encoding_layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
-<span class="n">sum_of_weights</span> <span class="o">=</span> <span class="p">{</span><span class="n">index</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">encoding_weights</span><span class="p">[</span><span class="mi">0</span><span class="p">])}</span>
-
-<span class="n">weights</span> <span class="o">=</span> <span class="n">sum_of_weights</span>
-<span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">encoder_dim1</span><span class="p">):</span>
-    <span class="n">max_key</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">key</span><span class="p">:</span> <span class="n">weights</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-    <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_key</span><span class="p">)</span>
-    <span class="k">del</span> <span class="n">weights</span><span class="p">[</span><span class="n">max_key</span><span class="p">]</span>
-    
-<span class="nb">print</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>   
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-<div class="prompt"></div>
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[19, 18, 3, 15, 8, 10, 23, 9]
+<pre>546/546 [==============================] - 0s 128us/step
+0.932234432234
 </pre>
 </div>
 </div>
@@ -12439,66 +13647,27 @@ Name: 24, dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Check-the-neural-net-performance-with-those-new-selected-features">Check the neural net performance with those new selected features<a class="anchor-link" href="#Check-the-neural-net-performance-with-those-new-selected-features">&#182;</a></h2>
+<p>The indices of the extracted features are:</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[133]:</div>
+<div class="prompt input_prompt">In&nbsp;[185]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x_train_selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">features</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_train</span><span class="p">])</span>
-<span class="n">x_val_selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">features</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_val</span><span class="p">])</span>
-</pre></div>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">encoding_weights</span> <span class="o">=</span> <span class="n">encoding_layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
+<span class="n">sum_of_weights</span> <span class="o">=</span> <span class="p">{</span><span class="n">index</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">encoding_weights</span><span class="p">[</span><span class="mi">0</span><span class="p">])}</span>
 
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[135]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">input_dim</span> <span class="o">=</span> <span class="n">x_train_selected</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">hidden1_dim</span> <span class="o">=</span> <span class="mi">16</span>
-<span class="n">hidden2_dim</span> <span class="o">=</span> <span class="mi">16</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[136]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
-    <span class="n">model_new</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
-    <span class="n">model_new</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hidden1_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,)))</span>
-    <span class="n">model_new</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hidden2_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
-    <span class="n">model_new</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
-
-    <span class="n">model_new</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span>
-                  <span class="n">optimizer</span><span class="o">=</span><span class="n">RMSprop</span><span class="p">(),</span>
-                  <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
-
-    <span class="n">model_new</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train_selected</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> 
-              <span class="n">batch_size</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
-              <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-              <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-              <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-              <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-    <span class="n">score</span> <span class="o">=</span> <span class="n">model_new</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_val_selected</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">score</span><span class="p">))</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="n">sum_of_weights</span>
+<span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">encoder_dim1</span><span class="p">):</span>
+    <span class="n">max_key</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">key</span><span class="p">:</span> <span class="n">weights</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_key</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">weights</span><span class="p">[</span><span class="n">max_key</span><span class="p">]</span>
+    
+<span class="nb">print</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12513,13 +13682,101 @@ Name: 24, dtype: int64</pre>
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>546/546 [==============================] - 0s 62us/step
+<pre>[12, 6, 20, 0, 5, 1, 17, 2, 23, 22, 21, 8, 3]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Check-the-neural-net-performance-with-new-selected-features">Check the neural net performance with new selected features<a class="anchor-link" href="#Check-the-neural-net-performance-with-new-selected-features">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[180]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x_train_selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">features</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_train</span><span class="p">])</span>
+<span class="n">x_val_selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">features</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_val</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[182]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">input_dim</span> <span class="o">=</span> <span class="n">x_train_selected</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">hidden1_dim</span> <span class="o">=</span> <span class="mi">26</span>
+<span class="n">hidden2_dim</span> <span class="o">=</span> <span class="mi">26</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[183]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result3</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">model_new</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model_new</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hidden1_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,)))</span>
+    <span class="n">model_new</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hidden2_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
+    <span class="n">model_new</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
+
+    <span class="n">model_new</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span>
+                  <span class="n">optimizer</span><span class="o">=</span><span class="n">RMSprop</span><span class="p">(),</span>
+                  <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
+
+    <span class="n">model_new</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train_selected</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> 
+              <span class="n">batch_size</span><span class="o">=</span><span class="n">batchsize</span><span class="p">,</span>
+              <span class="n">epochs</span><span class="o">=</span><span class="n">epochsize</span><span class="p">,</span>
+              <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+              <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+              <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">model_new</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_val_selected</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">result3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">result3</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt"></div>
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>546/546 [==============================] - 0s 100us/step
 [0.81135531135531136]
-546/546 [==============================] - 0s 39us/step
-[0.81135531135531136, 0.80219780219780223]
-546/546 [==============================] - 0s 63us/step
-[0.81135531135531136, 0.80219780219780223, 0.82783882783882778]
-0.827838827839
+546/546 [==============================] - 0s 110us/step
+[0.81135531135531136, 0.79853479853479858]
+546/546 [==============================] - 0s 110us/step
+[0.81135531135531136, 0.79853479853479858, 0.78388278388278387]
+0.797924297924
 </pre>
 </div>
 </div>
