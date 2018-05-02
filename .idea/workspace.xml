@@ -2,18 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="08d46bf4-e036-41f2-b91d-89047877cb82" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/StackedAutoEncoders.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/StackedAutoEncoders.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MNIST_Autoencoder.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/MNIST_Autoencoder.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Semeion.R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Semeion_Mit_Autoencoder.R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/StackedAutoEncoders.Rproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ionosphere.R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ionosphere_neu.R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model.R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/results.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robo_model.R" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/MNIST_Autoencoder-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/MNIST_Autoencoder-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/IONOSPHERE_Autoencoder.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/IONOSPHERE_Autoencoder.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/misc/MNIST_advanced.ipynb" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -23,15 +17,18 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/StackedAutoEncoders$StackedAutoEncoders.coverage" NAME="StackedAutoEncoders Coverage Results" MODIFIED="1525119475495" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/StackedAutoEncoders$StackedAutoEncoders.coverage" NAME="StackedAutoEncoders Coverage Results" MODIFIED="1525289425965" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="MNIST_Autoencoder.ipynb" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/MNIST_Autoencoder.ipynb">
-          <provider selected="true" editor-type-id="ipnb-editor">
-            <state>
-              <selected id="2" />
+      <file leaf-file-name="MNIST_SAE.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/MNIST_SAE.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="770">
+              <caret line="50" column="58" lean-forward="true" selection-start-line="50" selection-start-column="58" selection-end-line="50" selection-end-column="58" />
+              <folding>
+                <element signature="e#0#46#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -41,10 +38,20 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="Jupyter Notebook" />
+        <option value="Python Script" />
       </list>
     </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>sae1</find>
+      <find>pretrain1</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>pretrain1</replace>
+      <replace>pre_train_128</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -57,6 +64,10 @@
         <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/MNIST_advanced.ipynb" />
         <option value="$PROJECT_DIR$/MNIST_Autoencoder.ipynb" />
+        <option value="$PROJECT_DIR$/results/MNIST_Stacked_Autoencoder.ipynb" />
+        <option value="$PROJECT_DIR$/MNIST_Stacked_Autoencoder.ipynb" />
+        <option value="$PROJECT_DIR$/results/MNIST_SAE.py" />
+        <option value="$PROJECT_DIR$/MNIST_SAE.py" />
       </list>
     </option>
   </component>
@@ -80,6 +91,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -91,13 +103,12 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Ähnlichkeitssuche_in_db/Projekt/repo" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -106,6 +117,11 @@
         <option name="myModuleName" value="StackedAutoEncoders" />
       </console-settings>
     </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ThinkPad\Dropbox\Uni\Data Science\Pattern Recognition 2\StackedAutoEncoders" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -201,16 +217,16 @@
     <frame x="-1928" y="-95" width="1936" height="1056" extended-state="6" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.31503198" side_tool="true" weight="0.28431374" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.38699362" side_tool="true" weight="0.27124184" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Python Console" order="7" weight="0.2167756" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="7" sideWeight="0.6130064" visible="true" weight="0.3093682" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.684968" weight="0.28431374" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.2124183" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26545843" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.17538126" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.27985075" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
-      <window_info anchor="right" auto_hide="true" id="SciView" order="4" show_stripe_button="false" sideWeight="0.498708" type="FLOATING" weight="0.32995737" />
+      <window_info anchor="right" id="SciView" order="4" sideWeight="0.498708" weight="0.32995737" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
@@ -226,28 +242,28 @@
     </layout>
     <layout-to-restore>
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26545843" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27985075" />
       <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" auto_hide="true" id="SciView" order="4" show_stripe_button="false" sideWeight="0.498708" type="FLOATING" weight="0.32995737" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.684968" weight="0.28431374" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="right" id="Data View" order="5" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.684968" weight="0.28431374" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="right" id="Data View" order="5" />
-      <window_info anchor="bottom" id="Python Console" order="8" weight="0.2167756" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="right" x="0" y="0" width="434" height="856" id="Documentation" order="6" sideWeight="0.501292" side_tool="true" weight="0.32995737" />
-      <window_info anchor="right" id="Database" order="3" />
-      <window_info anchor="bottom" id="Terminal" order="9" weight="0.2124183" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.31503198" side_tool="true" weight="0.28431374" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="right" x="0" y="0" width="434" height="856" id="Documentation" order="6" sideWeight="0.501292" side_tool="true" weight="0.32995737" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.17538126" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.38699362" side_tool="true" weight="0.27124184" />
+      <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="right" id="SciView" order="4" sideWeight="0.498708" visible="true" weight="0.32995737" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="right" id="Database" order="3" />
+      <window_info anchor="bottom" id="Python Console" order="8" sideWeight="0.6130064" visible="true" weight="0.3093682" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -260,7 +276,51 @@
     <MESSAGE value="autoencoder, stacked autoencoder" />
     <option name="LAST_COMMIT_MESSAGE" value="autoencoder, stacked autoencoder" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
+  </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/MNIST_SAE.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1364">
+          <caret line="62" lean-forward="true" selection-start-line="62" selection-end-line="62" />
+          <folding>
+            <element signature="e#0#46#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/MNIST_SAE.py" />
+    <entry file="file://$PROJECT_DIR$/MNIST_Autoencoder.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MNIST_Autoencoder.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MNIST_Autoencoder.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MNIST_Autoencoder.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/MNIST_Autoencoder.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
@@ -332,20 +392,31 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MNIST_Autoencoder.py" />
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MNIST_advanced.ipynb">
+    <entry file="file://$PROJECT_DIR$/MNIST_advanced.ipynb" />
+    <entry file="file://$PROJECT_DIR$/.ipynb_checkpoints/MNIST_Autoencoder-checkpoint.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
           <selected id="0" />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/MNIST_Stacked_Autoencoder.ipynb" />
     <entry file="file://$PROJECT_DIR$/MNIST_Autoencoder.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
-          <selected id="2" />
+          <selected id="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/MNIST_Stacked_Autoencoder.ipynb" />
+    <entry file="file://$PROJECT_DIR$/results/MNIST_SAE.py" />
+    <entry file="file://$PROJECT_DIR$/MNIST_SAE.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="770">
+          <caret line="50" column="58" lean-forward="true" selection-start-line="50" selection-start-column="58" selection-end-line="50" selection-end-column="58" />
+          <folding>
+            <element signature="e#0#46#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
