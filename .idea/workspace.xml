@@ -2,16 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="08d46bf4-e036-41f2-b91d-89047877cb82" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/StackedAutoEncoders.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/StackedAutoEncoders.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/other.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MNIST_Autoencoder.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/MNIST_Autoencoder.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MNIST_Autoencoder_dim_reduction.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/MNIST_Autoencoder_dim_reduction.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MNIST_SAE.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/MNIST_SAE.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MNIST_SAE.py" beforeDir="false" afterPath="$PROJECT_DIR$/MNIST_SAE.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ROBO_Autoencoder.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/ROBO_Autoencoder.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/autoencoder1.h5" beforeDir="false" afterPath="$PROJECT_DIR$/models/autoencoder1.h5" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/encoder1.h5" beforeDir="false" afterPath="$PROJECT_DIR$/models/encoder1.h5" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -28,8 +19,8 @@
       <file leaf-file-name="MNIST_SAE.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MNIST_SAE.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-198">
-              <caret line="41" selection-start-line="41" selection-end-line="70" selection-end-column="34" />
+            <state relative-caret-position="284">
+              <caret line="145" column="2" lean-forward="true" selection-start-line="145" selection-start-column="2" selection-end-line="145" selection-end-column="37" />
               <folding>
                 <element signature="e#0#66#0" expanded="true" />
               </folding>
@@ -103,6 +94,11 @@
             <path>
               <item name="StackedAutoEncoders" type="b2602c69:ProjectViewProjectNode" />
               <item name="StackedAutoEncoders" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="StackedAutoEncoders" type="b2602c69:ProjectViewProjectNode" />
+              <item name="StackedAutoEncoders" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -245,16 +241,16 @@
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="12" sideWeight="0.38699362" side_tool="true" weight="0.27124184" />
-      <window_info anchor="right" x="0" y="0" width="434" height="856" id="Documentation" order="6" sideWeight="0.5077574" side_tool="true" visible="true" weight="0.23400854" />
+      <window_info anchor="right" x="0" y="0" width="434" height="856" id="Documentation" order="6" sideWeight="0.50739646" side_tool="true" visible="true" weight="0.23400854" />
       <window_info anchor="bottom" id="Database Changes" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Python Console" order="8" sideWeight="0.6130064" visible="true" weight="0.22766885" />
+      <window_info anchor="bottom" id="Python Console" order="8" sideWeight="0.6130064" weight="0.20697168" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.684968" weight="0.28431374" />
-      <window_info anchor="bottom" id="Terminal" order="9" weight="0.26361656" />
+      <window_info anchor="bottom" id="Terminal" order="9" visible="true" weight="0.26361656" />
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16471216" />
       <window_info anchor="bottom" id="Docker" order="10" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
-      <window_info anchor="right" x="-1124" y="96" width="619" height="634" id="SciView" order="4" sideWeight="0.4922426" visible="true" weight="0.23400854" />
+      <window_info anchor="right" x="-1124" y="96" width="619" height="634" id="SciView" order="4" sideWeight="0.49260354" visible="true" weight="0.23400854" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
@@ -527,8 +523,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MNIST_SAE.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-198">
-          <caret line="41" selection-start-line="41" selection-end-line="70" selection-end-column="34" />
+        <state relative-caret-position="284">
+          <caret line="145" column="2" lean-forward="true" selection-start-line="145" selection-start-column="2" selection-end-line="145" selection-end-column="37" />
           <folding>
             <element signature="e#0#66#0" expanded="true" />
           </folding>
