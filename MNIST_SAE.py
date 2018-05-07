@@ -14,6 +14,8 @@ import keras
 import matplotlib.pyplot as plt
 import numpy as np
 
+plt.show(block=True)
+
 num_classes = 10
 input_dim = 784
 batch_size = 256
@@ -167,6 +169,9 @@ sae = Model(input_img, sae_decoded3)
 sae.layers[1].set_weights(autoencoder1.layers[1].get_weights())
 sae.layers[2].set_weights(autoencoder2.layers[1].get_weights())
 sae.layers[3].set_weights(autoencoder3.layers[1].get_weights())
+# sae.layers[4].set_weights(autoencoder3.layers[2].get_weights())
+# sae.layers[5].set_weights(autoencoder2.layers[2].get_weights())
+# sae.layers[6].set_weights(autoencoder1.layers[2].get_weights())
 
 sae.compile(loss='binary_crossentropy', optimizer=RMSprop())
 sae.fit(x_train
@@ -181,8 +186,7 @@ sae.fit(x_train
         )
 
 score4 = sae.evaluate(x_val, x_val, verbose=0)
-print('Test loss:', score4[0])
-
+print('Test loss:', score4)
 
 decoded_imgs = sae.predict(x_val)
 
@@ -203,3 +207,18 @@ for i in range(n):
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 plt.show()
+
+
+class_layer = Dense(num_classes, activation='softmax')(sae_decoded3)
+classifier = Model(inputs=input_img, outputs=class_layer)
+classifier.compile(loss='categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
+
+classifier.fit(x_train, y_train
+               , epochs=7
+               , batch_size=batch_size
+               , validation_split=0.1
+               , shuffle=True)
+
+score5 = classifier.evaluate(x_val, y_val)
+print('Test loss:', score5[0])
+print('Test accuracy:', score5[1])
