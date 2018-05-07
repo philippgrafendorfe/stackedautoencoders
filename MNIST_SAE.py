@@ -60,10 +60,8 @@ autoencoder1.fit(x_train
                  , epochs=epoch1
                  , batch_size=batch_size
                  , shuffle=True
-                 # , verbose=False
-                 # , validation_data=(x_val, x_val)
+                 , verbose=False
                  , validation_split=0.1
-                 # , callbacks=[early_stopping]
                  )
 # autoencoder1.save('models/autoencoder1.h5')
 # encoder1.save('models/encoder1.h5')
@@ -71,6 +69,7 @@ autoencoder1.fit(x_train
 score1 = autoencoder1.evaluate(x_val, y_val, verbose=0)
 print('Test loss:', score1[0])
 print('Test accuracy:', score1[1])
+
 
 # ==========================================================
 # train the second layer weights
