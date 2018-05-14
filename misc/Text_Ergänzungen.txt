@@ -1,0 +1,41 @@
+## Stacked Autoencoder (SAE)
+
+A special form of autoencoder the stacked autoencoder. This technique is somewhere between supervised and unsupervised learning; thats why it is often called semi- supervised learning. The idea is to combine the following concepts of autoencoders:
+
+- Encoding
+- Classification
+- Pretraining the weights of a deep neural network.
+
+Before getting started one has to decide for an experimental setup. This means to decide the dimensions of the layers respectively. For the MNIST dataset (later in the report) we decided to go with a 784-128-64-32-64-128-784 structure. This deep autoencoder would work well for itself but its deeper investigation is not part of this project. 
+
+What happens then is that we pre- train a single autoencoder classifier with a 784-128-784-10 structure. It learns how to encode and decode the data to make an accurate prediction. We store the the output of the training data coming from the hidden layer and the connection weights from input layer to hidden layer.
+After this we train the next single autoencoder classifier with 128-64-128-10 structure. As input we use the saved output from the previous autoencoder. We repeat this process. In our architecture just one more time because than we come to the final decoding layer of dimension 32.
+
+After pretraining all those single autoencoder classifiers we can use them for various tasks like denoising, reconstruction of compressed data and classification. The pretraining shall provide better and faster results for the application.
+
+
+## Experimental Setup
+
+For testing our approach with SAE we went with four different applications that might give us a better understanding in performance and handling. 
+
+### Standard Neural Net
+
+For a better comparison to future results of SAE we train a more or less standard forward neural net for every dataset respectively. we might included additional functions like dropout which randomly sets a fraction of the input to 0. For more information on that visit https://keras.io/layers/core/.
+The goal is to make an effective and easy neural net. Nothing special. Just to define a scope for our experimental results.
+
+### Train Stacked Autoencoder
+
+For every dataset we choose an architecture like mentioned in ~ref{SAE oben}. With those pretrained weights all the tasks are fulfilled:
+
+- Compression and reconstruction: a dataset is decomposed and then reconstructed. We measure the average loss of the test- input data compared to the test- output data. This is somehow a regression task but although semi- supervised because we use the pretrained- weights from the SAE.
+- Classification: After the last encoding layer we plug a classification layer with either a softmax or a sigmoid activation function. Both of them bring similar results. With this result we want to test how far a dataset can be compressed without losing a significant amount of accuracy. 
+- Denoising: We use the pretrained SAE to reconstruct noisy images. To get a better understanding of the performance we are going to measure the prediction accuracy of noisy input compared to the prediciton accuracy of denoised input; and additionally we get some information about the loss as well because basically this is only a reconstruction task as mentioned above. 
+
+
+
+
+
+
+
+
+
